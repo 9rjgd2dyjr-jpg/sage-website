@@ -1,83 +1,155 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Attendance System</title>
+    <title>Sage Academy | 学習塾サージュ</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100 flex items-center justify-center h-screen">
+<body class="bg-slate-50 text-slate-800 font-sans flex flex-col min-h-screen">
 
-    <div class="bg-white p-8 rounded-lg shadow-lg text-center max-w-sm w-full">
-        <h1 class="text-2xl font-bold mb-6 text-gray-800">入退室管理システム</h1>
-        
-        <div id="status-text" class="text-sm text-gray-400 mb-6 h-6">
-            システム待機中...
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-indigo-900 flex items-center">
+                <i class="fa-solid fa-graduation-cap mr-2"></i> 学習塾サージュ
+            </h1>
+            <div class="hidden md:flex space-x-6">
+                <a href="#attendance" class="text-gray-600 hover:text-indigo-600 font-bold transition">入退室</a>
+                <a href="#status" class="text-gray-600 hover:text-indigo-600 font-bold transition">現在の状況</a>
+                <a href="#reservation" class="bg-indigo-600 text-white px-5 py-2 rounded-full font-bold hover:bg-indigo-700 transition shadow-md">
+                    授業予約
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="relative bg-gradient-to-r from-indigo-900 to-slate-800 text-white py-20 px-4 text-center">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">
+                未来を創る、確かな学びを。
+            </h2>
+            <p class="text-lg text-indigo-100 mb-8">
+                一人ひとりに合わせた指導で、成績アップと志望校合格をサポートします。
+            </p>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-6xl mx-auto px-4 py-12 w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+        <div id="attendance" class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-indigo-500">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold text-gray-800">入退室記録</h3>
+                <i class="fa-solid fa-id-card text-indigo-500 text-2xl"></i>
+            </div>
+            <p class="text-gray-500 text-sm mb-6">入室・退室時にボタンを押してください。</p>
+            
+            <div id="status-text" class="text-center text-sm font-medium text-gray-400 mb-4 h-6">
+                システム待機中...
+            </div>
+
+            <div class="space-y-3">
+                <button onclick="handleAttendance('入室')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg transition shadow flex items-center justify-center">
+                    <i class="fa-solid fa-door-open mr-2"></i> 入室する
+                </button>
+                <button onclick="handleAttendance('退室')" class="w-full bg-slate-500 hover:bg-slate-600 text-white font-bold py-3 rounded-lg transition shadow flex items-center justify-center">
+                    <i class="fa-solid fa-person-walking-arrow-right mr-2"></i> 退室する
+                </button>
+            </div>
         </div>
 
-        <div class="space-y-4">
-            <button onclick="handleAction('入室')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded transition duration-200">
-                入室する
-            </button>
-            <button onclick="handleAction('退室')" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded transition duration-200">
-                退室する
+        <div id="status" class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-emerald-500">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold text-gray-800">現在の学習室</h3>
+                <i class="fa-solid fa-users text-emerald-500 text-2xl"></i>
+            </div>
+            <p class="text-gray-500 text-sm mb-4">現在学習中の生徒一覧です。</p>
+            
+            <div id="desk-list" class="bg-slate-50 p-4 rounded-lg h-48 overflow-y-auto border border-slate-200">
+                <div class="flex items-center justify-between p-2 border-b border-slate-200">
+                    <span class="font-bold text-gray-700"><i class="fa-solid fa-user bg-gray-200 p-1 rounded-full mr-2"></i>山田 太郎</span>
+                    <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">学習中</span>
+                </div>
+                <div class="flex items-center justify-between p-2 border-b border-slate-200">
+                    <span class="font-bold text-gray-700"><i class="fa-solid fa-user bg-gray-200 p-1 rounded-full mr-2"></i>鈴木 花子</span>
+                    <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">学習中</span>
+                </div>
+                <div class="text-center text-gray-400 text-xs mt-4">
+                    (自動更新: 5分ごと)
+                </div>
+            </div>
+            <button class="mt-4 w-full text-emerald-600 font-bold text-sm hover:underline" onclick="alert('最新の状況を取得します（GAS連携待ち）')">
+                <i class="fa-solid fa-rotate-right"></i> 更新する
             </button>
         </div>
-    </div>
+
+        <div id="reservation" class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-orange-500">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold text-gray-800">授業予約</h3>
+                <i class="fa-solid fa-calendar-check text-orange-500 text-2xl"></i>
+            </div>
+            <p class="text-gray-500 text-sm mb-6">次回の授業や面談の予約はこちらから。</p>
+            
+            <a href="https://forms.google.com" target="_blank" class="block w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-lg transition shadow text-center">
+                <i class="fa-solid fa-pen-to-square mr-2"></i> 予約フォームを開く
+            </a>
+            <p class="text-xs text-gray-400 mt-3 text-center">※ Googleフォームへ移動します</p>
+        </div>
+
+    </main>
+
+    <footer class="bg-slate-800 text-white py-8 text-center mt-auto">
+        <p class="text-sm opacity-70">&copy; 2026 Sage Academy. All rights reserved.</p>
+    </footer>
 
     <script>
-        // --- CONFIGURATION ---
-        // Target Google Apps Script Web App URL
+        // --- SETTINGS ---
+        // Your GAS Web App URL
         const GAS_URL = "https://script.google.com/macros/s/AKfycby-8l2XxlFR8ZtrKiKnYzSWB6mEjNGukLQcvOhXaEhq9v77aSNxjFJUWDBVcD3-9G41/exec";
 
         /**
-         * Handles the button click event and sends data to GAS.
-         * @param {string} actionType - The type of action (e.g., '入室', '退室').
+         * Handle Attendance Button Click
+         * Sends '入室' or '退室' to Google Sheets
          */
-        function handleAction(actionType) {
-            // Get the status element
+        function handleAttendance(actionType) {
             const statusElement = document.getElementById('status-text');
-
-            // Update UI to loading state
+            
+            // UI Loading State
             statusElement.innerText = actionType + "を送信中...";
-            statusElement.className = "text-sm text-indigo-600 font-bold animate-pulse";
+            statusElement.className = "text-center text-sm font-bold text-indigo-600 animate-pulse mb-4 h-6";
 
-            // Prepare the payload
             const payload = {
                 action: actionType,
-                name: "テスト生", // Placeholder name as per instruction
+                name: "テスト生", // In future, get this from local storage or login
                 timestamp: new Date().toISOString()
             };
 
-            // Send data using fetch with no-cors mode
-            // Note: 'no-cors' limits response readability but allows sending data to Google.
+            // Send to GAS
             fetch(GAS_URL, {
                 method: "POST",
                 mode: "no-cors",
-                headers: {
-                    "Content-Type": "text/plain" // GAS requires text/plain for POST without preflight
-                },
+                headers: { "Content-Type": "text/plain" },
                 body: JSON.stringify(payload)
             })
             .then(() => {
-                // Success handling (Assumed success due to no-cors limitations)
-                console.log("Request sent successfully.");
-                statusElement.innerText = actionType + "を記録しました！";
-                statusElement.className = "text-sm text-emerald-600 font-bold";
-
-                // Reset status after 2 seconds
+                // Success Handling
+                statusElement.innerText = actionType + "完了！ 頑張りましょう！";
+                statusElement.className = "text-center text-sm font-bold text-emerald-600 mb-4 h-6";
+                
+                // Clear message after 3 seconds
                 setTimeout(() => {
                     statusElement.innerText = "システム待機中...";
-                    statusElement.className = "text-sm text-gray-400";
-                }, 2000);
+                    statusElement.className = "text-center text-sm font-medium text-gray-400 mb-4 h-6";
+                }, 3000);
             })
-            .catch(error => {
-                // Error handling
-                console.error("Fetch error:", error);
-                statusElement.innerText = "通信エラーが発生しました";
-                statusElement.className = "text-sm text-red-600 font-bold";
+            .catch(err => {
+                console.error(err);
+                statusElement.innerText = "通信エラー";
+                statusElement.className = "text-center text-sm font-bold text-red-500 mb-4 h-6";
             });
         }
+
+        // Note: 'Desk Usage' feature requires a GET request setup in GAS later.
     </script>
 </body>
 </html>
