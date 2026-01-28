@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>学習塾サージュ | Sage Academy</title>
+    <title>Sage Academy | Class Reservation</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -16,8 +16,8 @@
             </h1>
             <div class="space-x-4">
                 <a href="#about" class="hidden md:inline text-gray-600 hover:text-indigo-600 font-bold">サージュについて</a>
-                <a href="#contact" class="bg-indigo-600 text-white px-5 py-2 rounded-full font-bold hover:bg-indigo-700 transition shadow-md">
-                    お問い合わせ
+                <a href="#reservation-section" class="bg-indigo-600 text-white px-5 py-2 rounded-full font-bold hover:bg-indigo-700 transition shadow-md">
+                    <i class="fa-regular fa-calendar-check mr-1"></i> 予約する
                 </a>
             </div>
         </div>
@@ -26,94 +26,155 @@
     <header class="relative bg-gradient-to-r from-indigo-900 to-slate-800 text-white py-24 px-4 text-center overflow-hidden">
         <div class="relative z-10 max-w-4xl mx-auto">
             <h2 class="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight">
-                未来を創る、<br class="md:hidden"/>確かな学びを。
+                目標達成のための<br class="md:hidden"/>学習時間を確保しよう。
             </h2>
             <p class="text-xl text-indigo-100 mb-10">
-                一人ひとりに寄り添う指導で、<br class="md:hidden"/>確実な成長をサポートします。
+                24時間いつでも、スマホから次回の授業予約が可能です。
             </p>
         </div>
         <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-            <i class="fa-solid fa-book absolute top-10 left-10 text-9xl"></i>
-            <i class="fa-solid fa-pen-nib absolute bottom-10 right-10 text-9xl"></i>
+            <i class="fa-solid fa-calendar-days absolute top-10 left-10 text-9xl"></i>
+            <i class="fa-solid fa-clock absolute bottom-10 right-10 text-9xl"></i>
         </div>
     </header>
 
-    <section class="max-w-5xl mx-auto -mt-16 px-4 relative z-20">
-        <div class="bg-white rounded-2xl shadow-xl p-6 md:p-10 border border-slate-100">
-            <div class="flex items-center justify-between mb-6 border-b border-slate-100 pb-4">
-                <h3 class="text-xl font-bold text-slate-700 flex items-center">
-                    <i class="fa-solid fa-user-check text-indigo-600 mr-2"></i> 生徒用メニュー
+    <section id="reservation-section" class="max-w-3xl mx-auto -mt-16 px-4 relative z-20 mb-20">
+        <div class="bg-white rounded-2xl shadow-xl p-8 md:p-10 border border-slate-100">
+            
+            <div class="flex items-center justify-between mb-8 border-b border-slate-100 pb-4">
+                <h3 class="text-2xl font-bold text-slate-700 flex items-center">
+                    <i class="fa-solid fa-pen-to-square text-emerald-500 mr-3"></i> 授業予約フォーム
                 </h3>
-                <span id="status-text" class="text-sm text-gray-400">システム待機中...</span>
+                <span id="status-text" class="text-sm font-medium text-gray-400">入力してください</span>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <button onclick="simulateAction('入室処理')" class="group flex flex-col items-center justify-center p-8 bg-indigo-50 hover:bg-indigo-100 border-2 border-indigo-100 rounded-xl transition-all cursor-pointer">
-                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-clock text-3xl text-indigo-600"></i>
+            <div class="space-y-6">
+                
+                <div>
+                    <label class="block text-gray-700 font-bold mb-2" for="student-name">お名前</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-user absolute left-4 top-3.5 text-gray-400"></i>
+                        <input type="text" id="student-name" placeholder="例：山田 太郎" 
+                            class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
                     </div>
-                    <span class="text-lg font-bold text-indigo-900">入室・退室する</span>
-                    <span class="text-sm text-indigo-400 mt-1">ワンタップで記録</span>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 font-bold mb-2" for="reservation-date">希望日</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-calendar absolute left-4 top-3.5 text-gray-400"></i>
+                        <input type="date" id="reservation-date" 
+                            class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 font-bold mb-2" for="reservation-time">希望時間帯</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-clock absolute left-4 top-3.5 text-gray-400"></i>
+                        <select id="reservation-time" class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition bg-white appearance-none">
+                            <option value="" disabled selected>時間を選択してください</option>
+                            <option value="10:00-12:00">10:00 - 12:00 (午前)</option>
+                            <option value="13:00-16:00">13:00 - 16:00 (午後A)</option>
+                            <option value="17:00-22:00">17:00 - 22:00 (夜間)</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down absolute right-4 top-4 text-gray-400 pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <button onclick="submitReservation()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl transition shadow-lg transform active:scale-95 flex items-center justify-center text-lg mt-4">
+                    <i class="fa-solid fa-paper-plane mr-2"></i> 予約を確定する
                 </button>
 
-                <button onclick="simulateAction('予約ページ移動')" class="group flex flex-col items-center justify-center p-8 bg-emerald-50 hover:bg-emerald-100 border-2 border-emerald-100 rounded-xl transition-all cursor-pointer">
-                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-calendar-days text-3xl text-emerald-600"></i>
-                    </div>
-                    <span class="text-lg font-bold text-emerald-900">授業を予約する</span>
-                    <span class="text-sm text-emerald-500 mt-1">24時間受付中</span>
-                </button>
             </div>
         </div>
     </section>
 
-    <section id="about" class="py-20 px-4 max-w-6xl mx-auto text-center">
-        <h3 class="text-3xl font-bold text-slate-800 mb-12">学習塾サージュの3つの特徴</h3>
-        <div class="grid md:grid-cols-3 gap-10">
-            <div class="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition">
-                <div class="w-14 h-14 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <i class="fa-solid fa-chalkboard-user text-2xl text-indigo-600"></i>
-                </div>
-                <h4 class="text-xl font-bold mb-3">個別最適化学習</h4>
-                <p class="text-gray-600 leading-relaxed">生徒一人ひとりの理解度に合わせて、最適なカリキュラムを作成します。</p>
+    <section id="about" class="py-10 px-4 max-w-6xl mx-auto text-center">
+        <h3 class="text-2xl font-bold text-slate-800 mb-8">予約時の注意点</h3>
+        <div class="grid md:grid-cols-3 gap-6 text-left">
+            <div class="p-5 bg-white rounded-lg shadow-sm border border-slate-100">
+                <h4 class="font-bold text-indigo-900 mb-2"><i class="fa-solid fa-triangle-exclamation mr-2"></i>キャンセルについて</h4>
+                <p class="text-sm text-gray-600">当日のキャンセルは、必ずお電話にてご連絡をお願いいたします。</p>
             </div>
-            <div class="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition">
-                <div class="w-14 h-14 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <i class="fa-solid fa-laptop-code text-2xl text-indigo-600"></i>
-                </div>
-                <h4 class="text-xl font-bold mb-3">最新のIT活用</h4>
-                <p class="text-gray-600 leading-relaxed">入退室管理や予約システムなど、スムーズな学習環境を提供します。</p>
+            <div class="p-5 bg-white rounded-lg shadow-sm border border-slate-100">
+                <h4 class="font-bold text-indigo-900 mb-2"><i class="fa-solid fa-clock mr-2"></i>時間厳守</h4>
+                <p class="text-sm text-gray-600">予約時間の5分前には入室できるように準備をお願いします。</p>
             </div>
-            <div class="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition">
-                <div class="w-14 h-14 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <i class="fa-solid fa-heart text-2xl text-indigo-600"></i>
-                </div>
-                <h4 class="text-xl font-bold mb-3">親身なサポート</h4>
-                <p class="text-gray-600 leading-relaxed">学習面だけでなく、進路や生活面での悩みにも寄り添います。</p>
+            <div class="p-5 bg-white rounded-lg shadow-sm border border-slate-100">
+                <h4 class="font-bold text-indigo-900 mb-2"><i class="fa-solid fa-check-double mr-2"></i>持ち物</h4>
+                <p class="text-sm text-gray-600">筆記用具と、前回配布したプリントを忘れずに持参してください。</p>
             </div>
         </div>
     </section>
 
-    <footer class="bg-slate-900 text-slate-400 py-10 text-center">
+    <footer class="bg-slate-900 text-slate-400 py-10 text-center mt-20">
         <p>&copy; 2026 Sage Academy. All Rights Reserved.</p>
     </footer>
 
     <script>
-        function simulateAction(actionName) {
+        // --- CONFIGURATION ---
+        const GAS_URL = "https://script.google.com/macros/s/AKfycby-8l2XxlFR8ZtrKiKnYzSWB6mEjNGukLQcvOhXaEhq9v77aSNxjFJUWDBVcD3-9G41/exec";
+
+        /**
+         * Validates inputs and sends reservation data to GAS.
+         */
+        function submitReservation() {
+            // 1. Get DOM elements
+            const nameInput = document.getElementById('student-name');
+            const dateInput = document.getElementById('reservation-date');
+            const timeInput = document.getElementById('reservation-time');
             const statusText = document.getElementById('status-text');
-            statusText.innerText = actionName + "を処理中...";
-            statusText.className = "text-sm text-indigo-600 font-bold animate-pulse";
-            
-            // ここで将来的にGASと通信します
-            setTimeout(() => {
-                statusText.innerText = actionName + "が完了しました！";
+
+            // 2. Validate Inputs
+            if (!nameInput.value || !dateInput.value || !timeInput.value) {
+                alert("すべての項目を入力してください。");
+                return;
+            }
+
+            // 3. Update UI to Loading
+            statusText.innerText = "予約情報を送信中...";
+            statusText.className = "text-sm text-emerald-600 font-bold animate-pulse";
+
+            // 4. Prepare Payload
+            const payload = {
+                action: "reserve_class", // New action type for reservation
+                name: nameInput.value,
+                date: dateInput.value,
+                time: timeInput.value,
+                created_at: new Date().toISOString()
+            };
+
+            // 5. Send Data
+            fetch(GAS_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "text/plain" },
+                body: JSON.stringify(payload)
+            })
+            .then(() => {
+                // Success Handling
+                statusText.innerText = "予約が完了しました！";
                 statusText.className = "text-sm text-emerald-600 font-bold";
                 
+                // Clear inputs
+                nameInput.value = "";
+                dateInput.value = "";
+                timeInput.value = "";
+
+                alert("予約を受け付けました。\n教室でお待ちしています！");
+
                 setTimeout(() => {
-                    statusText.innerText = "システム待機中...";
-                    statusText.className = "text-sm text-gray-400";
-                }, 2000);
-            }, 800); // 0.8秒で完了したふりをする
+                    statusText.innerText = "入力してください";
+                    statusText.className = "text-sm font-medium text-gray-400";
+                }, 3000);
+            })
+            .catch(err => {
+                console.error(err);
+                statusText.innerText = "通信エラー";
+                statusText.className = "text-sm text-red-500 font-bold";
+                alert("送信に失敗しました。もう一度お試しください。");
+            });
         }
     </script>
 </body>
