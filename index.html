@@ -165,7 +165,7 @@
     </footer>
 
     <script>
-        // URLを新しいものに更新しました
+        // Updated URL
         const GAS_URL = "https://script.google.com/macros/s/AKfycbxWfaguziYRQX68TVr0vqzGFb2lVmsOyja-0Z-3CfMUfl5KsE1AvUQxVkkiGDztQdX3/exec"; 
 
         // State
@@ -198,7 +198,7 @@
                 
                 isConfigLoaded = true;
                 showCalendarView();
-            }).catch(e => { console.error(e); alert("通信エラー: 設定を読み込めませんでした。"); }).finally(() => {
+            }).catch(e => { console.error(e); alert("通信エラー: 設定を読み込めませんでした。\n1. GASデプロイを「全員」にしましたか？\n2. URLは最新ですか？"); }).finally(() => {
                 btns.forEach(b => { b.innerHTML = b.dataset.html; b.disabled=false; });
             });
         }
