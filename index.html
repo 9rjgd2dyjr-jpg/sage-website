@@ -178,7 +178,8 @@
 
     <script>
         // --- CONFIGURATION ---
-        const GAS_URL = "https://script.google.com/macros/s/AKfycby-8l2XxlFR8ZtrKiKnYzSWB6mEjNGukLQcvOhXaEhq9v77aSNxjFJUWDBVcD3-9G41/exec";
+        // NEW URL UPDATED:
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzWmMNZRygEqOC6eRCVzrzQYTDbC70KkHkDlzMQD1GE9ao_rGXyceqq9YUjf5XCLXsX/exec";
 
         // Global State (Will be overwritten by GAS data)
         let APP_CONFIG = {
@@ -200,16 +201,19 @@
             fetch(GAS_URL)
                 .then(response => response.json())
                 .then(data => {
+                    // Check for error response from GAS
+                    if(data.error) {
+                        console.error("GAS Error:", data.error);
+                        throw new Error(data.error);
+                    }
+
                     // Parse Data from GAS
                     APP_CONFIG.openHour = parseInt(data.openHour) || 10;
                     APP_CONFIG.closeHour = parseInt(data.closeHour) || 22;
                     
-                    // Parse "0,6" string to [0, 6] array
                     if(data.closedDays) {
                         APP_CONFIG.closedDaysOfWeek = String(data.closedDays).split(',').map(Number);
                     }
-                    
-                    // Parse holidays string
                     if(data.holidays) {
                         APP_CONFIG.holidays = String(data.holidays).split(',').map(s => s.trim());
                     }
@@ -220,7 +224,13 @@
                 })
                 .catch(err => {
                     console.error("Config Load Error", err);
-                    document.getElementById('initial-loader').innerHTML = "<p class='text-red-500'>通信エラー</p>";
+                    const loader = document.getElementById('initial-loader');
+                    loader.innerHTML = `
+                        <div class="text-center p-4">
+                            <p class="text-red-500 font-bold mb-2">通信エラー</p>
+                            <p class="text-xs text-gray-500">GASのURLまたは設定を確認してください</p>
+                            <button onclick="location.reload()" class="mt-4 bg-gray-200 px-4 py-2 rounded text-sm">再読み込み</button>
+                        </div>`;
                 });
         }
 
@@ -250,7 +260,9 @@
 
         function saveAdminSettings() {
             const btn = document.querySelector('#admin-modal button');
+            const originalText = btn.innerText;
             btn.innerText = "保存中...";
+            btn.disabled = true;
 
             // Gather Data
             const newOpen = document.getElementById('admin-open-hour').value;
@@ -282,8 +294,9 @@
                 location.reload();
             })
             .catch(err => {
-                alert("保存エラー");
-                btn.innerText = "設定を保存して更新";
+                alert("保存エラー: " + err);
+                btn.innerText = originalText;
+                btn.disabled = false;
             });
         }
 
@@ -428,6 +441,8 @@
                 alert("予約しました！");
                 closeModal('reservation-modal');
                 document.getElementById('input-name').value = "";
+            }).catch(err => {
+                alert("送信エラー: " + err);
             });
         }
     </script>
