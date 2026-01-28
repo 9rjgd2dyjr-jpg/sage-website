@@ -165,7 +165,8 @@
     </footer>
 
     <script>
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbzWmMNZRygEqOC6eRCVzrzQYTDbC70KkHkDlzMQD1GE9ao_rGXyceqq9YUjf5XCLXsX/exec"; 
+        // URLを新しいものに更新しました
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbxWfaguziYRQX68TVr0vqzGFb2lVmsOyja-0Z-3CfMUfl5KsE1AvUQxVkkiGDztQdX3/exec"; 
 
         // State
         let APP_CONFIG = { 
@@ -187,9 +188,9 @@
             fetch(GAS_URL).then(r=>r.json()).then(data => {
                 if(data.error) throw new Error(data.error);
                 // Config Setup
-                const cfg = data.config;
-                APP_CONFIG.openHour = parseInt(cfg.openHour);
-                APP_CONFIG.closeHour = parseInt(cfg.closeHour);
+                const cfg = data.config || {};
+                APP_CONFIG.openHour = parseInt(cfg.openHour) || 10;
+                APP_CONFIG.closeHour = parseInt(cfg.closeHour) || 22;
                 if(cfg.closedDays) APP_CONFIG.closedDaysOfWeek = String(cfg.closedDays).split(',').map(Number);
                 if(cfg.exceptions) APP_CONFIG.exceptions = JSON.parse(cfg.exceptions);
                 // Reservations Setup
@@ -197,7 +198,7 @@
                 
                 isConfigLoaded = true;
                 showCalendarView();
-            }).catch(e => { console.error(e); alert("通信エラー"); }).finally(() => {
+            }).catch(e => { console.error(e); alert("通信エラー: 設定を読み込めませんでした。"); }).finally(() => {
                 btns.forEach(b => { b.innerHTML = b.dataset.html; b.disabled=false; });
             });
         }
@@ -287,7 +288,6 @@
                     const timeStr = `${h}:${min===0?'00':'30'}`;
                     
                     // CHECK 1: Is this start time INSIDE an existing booking?
-                    // (e.g. Booking 19:30-20:30. Start 20:00 is inside. Block it.)
                     const isInsideBooking = dayReservations.some(r => currentMin >= r.startMin && currentMin < r.endMin);
                     
                     if (!isInsideBooking) {
@@ -313,7 +313,6 @@
             const booked = JSON.parse(s.dataset.booked);
 
             // Find the NEAREST future booking to cap the end time
-            // Example: Start 19:00. Booking at 19:30. Cap is 19:30.
             let nextBookingStart = limitMin;
             booked.forEach(r => {
                 if (r.startMin > startMin && r.startMin < nextBookingStart) {
