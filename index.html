@@ -176,8 +176,11 @@
                         <label class="text-red-600"><input type="checkbox" name="dow" value="0"> 日</label>
                     </div>
                 </div>
-                <div class="text-xs text-gray-500">※これは「基本ルール」です。特定の日だけ変えたい場合は、カレンダーの日付をクリックして個別設定してください。</div>
-                <button onclick="closeModal('global-setting-modal')" class="w-full bg-slate-600 text-white py-2 rounded">閉じる</button>
+                <div class="text-xs text-gray-500">※ここでは「毎週のルール」を決めます。</div>
+                
+                <button onclick="saveGlobalSettingsAndSend()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-lg">
+                    設定を保存して更新
+                </button>
             </div>
         </div>
     </div>
@@ -188,7 +191,7 @@
     </footer>
 
     <script>
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbzWmMNZRygEqOC6eRCVzrzQYTDbC70KkHkDlzMQD1GE9ao_rGXyceqq9YUjf5XCLXsX/exec"; // 新しいURLをここに（変わってなければそのままでOK）
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzWmMNZRygEqOC6eRCVzrzQYTDbC70KkHkDlzMQD1GE9ao_rGXyceqq9YUjf5XCLXsX/exec"; 
 
         // State
         let APP_CONFIG = { 
@@ -238,8 +241,7 @@
                 const dStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
                 
                 // Determine Status
-                // 1. Check Exceptions first
-                let status = "default"; // default, open, closed
+                let status = "default"; 
                 let startH = APP_CONFIG.openHour;
                 let endH = APP_CONFIG.closeHour;
 
@@ -248,7 +250,6 @@
                     status = ex.status;
                     if(status === 'open') { startH = ex.open; endH = ex.close; }
                 } else {
-                    // 2. Check Global Defaults
                     if (APP_CONFIG.closedDaysOfWeek.includes(dayOfWeek)) status = "closed";
                     else status = "open";
                 }
@@ -271,7 +272,6 @@
                     } else if (isClosed) badge = '<span class="text-xs text-gray-400">定休</span>';
                     
                     if(!isClosed) badge += `<div class="text-[10px] text-gray-500 mt-1">${startH}:00-${endH}:00</div>`;
-
                 } else {
                     badge = isClosed 
                         ? '<span class="text-xs text-red-400 font-bold border border-red-200 px-1 rounded">休</span>' 
@@ -295,8 +295,6 @@
             const [y,m,d] = dStr.split('-');
             document.getElementById('admin-date-title').innerText = `${m}月${d}日 の設定`;
             
-            // Set Radio
-            // If it's in exceptions, use that status. If not, it's 'default'.
             let val = "default";
             if (APP_CONFIG.exceptions[dStr]) val = APP_CONFIG.exceptions[dStr].status;
             
@@ -316,7 +314,6 @@
 
         function applyDateSettings() {
             const status = document.querySelector('input[name="day-status"]:checked').value;
-            
             if (status === "default") {
                 delete APP_CONFIG.exceptions[editingDate];
             } else {
@@ -324,7 +321,6 @@
                 const c = parseInt(document.getElementById('temp-close').value);
                 APP_CONFIG.exceptions[editingDate] = { status: status, open: o, close: c };
             }
-            
             closeModal('date-setting-modal');
             renderCalendar();
         }
@@ -337,30 +333,38 @@
             document.getElementById('global-setting-modal').classList.remove('hidden');
         }
 
-        function saveChangesToGAS() {
-            // Merge global settings from inputs (just in case)
-            if(!document.getElementById('global-setting-modal').classList.contains('hidden')) {
-                 // if global modal is open, verify inputs? No, assuming user closed it or we read from config
-            }
-            // Actually, let's read global inputs if the modal was ever opened/changed, 
-            // but for simplicity, let's assume APP_CONFIG is truth. 
-            // Wait, we need to allow changing global settings.
-            const newOpen = document.getElementById('global-open-hour').value || APP_CONFIG.openHour;
-            const newClose = document.getElementById('global-close-hour').value || APP_CONFIG.closeHour;
+        // NEW FUNCTION: Save immediately from Global Settings Modal
+        function saveGlobalSettingsAndSend() {
+            // Update internal state first
+            APP_CONFIG.openHour = parseInt(document.getElementById('global-open-hour').value) || 10;
+            APP_CONFIG.closeHour = parseInt(document.getElementById('global-close-hour').value) || 22;
             const newDays = [];
-            document.querySelectorAll('input[name="dow"]:checked').forEach(cb => newDays.push(cb.value));
+            document.querySelectorAll('input[name="dow"]:checked').forEach(cb => newDays.push(parseInt(cb.value)));
+            APP_CONFIG.closedDaysOfWeek = newDays;
+            
+            // Send to GAS
+            saveChangesToGAS();
+            
+            // Close modal
+            closeModal('global-setting-modal');
+        }
 
-            if(!confirm("設定を保存しますか？")) return;
+        function saveChangesToGAS() {
+            const btn = document.querySelector('button[onclick="saveGlobalSettingsAndSend()"]');
+            if(btn) { btn.innerText = "保存中..."; btn.disabled = true; }
 
             const payload = {
                 action: "update_config",
-                openHour: newOpen, closeHour: newClose, closedDays: newDays.join(','),
+                openHour: APP_CONFIG.openHour, 
+                closeHour: APP_CONFIG.closeHour, 
+                closedDays: APP_CONFIG.closedDaysOfWeek.join(','),
                 exceptions: JSON.stringify(APP_CONFIG.exceptions)
             };
             
             fetch(GAS_URL, { method: "POST", mode: "no-cors", headers: {"Content-Type":"text/plain"}, body: JSON.stringify(payload)})
-            .then(() => { alert("保存しました"); location.reload(); })
-            .catch(() => alert("保存エラー"));
+            .then(() => { alert("設定を保存・更新しました！"); location.reload(); })
+            .catch(() => alert("保存エラー"))
+            .finally(() => { if(btn) { btn.innerText = "設定を保存して更新"; btn.disabled = false; } });
         }
 
         // --- USER: RESERVATION ---
@@ -373,7 +377,6 @@
             const s = document.getElementById('select-start-time'); s.innerHTML="";
             for(let h=startH; h<endH; h++) { addOption(s, `${h}:00`); addOption(s, `${h}:30`); }
             
-            // Pass endH to updateEndTimes logic
             s.dataset.endH = endH; 
             updateEndTimes();
         }
@@ -382,11 +385,9 @@
             const s = document.getElementById('select-start-time');
             const e = document.getElementById('select-end-time'); e.innerHTML="";
             if(!s.value) return;
-            
             const limitH = parseInt(s.dataset.endH);
             const [sh, sm] = s.value.split(':').map(Number);
             let cm = (sh*60)+sm+30; const limitM = limitH*60;
-
             while(cm <= limitM) {
                 const h=Math.floor(cm/60); const m=cm%60; 
                 addOption(e, `${h}:${m===0?'00':'30'}`); 
