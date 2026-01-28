@@ -9,9 +9,7 @@
     <style>
         .animate-fade-in { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .admin-mode-active .calendar-cell:hover { opacity: 0.8; transform: scale(0.98); border-color: #6366f1; }
-        .toggle-checkbox:checked { right: 0; border-color: #10B981; }
-        .toggle-checkbox:checked + .toggle-label { background-color: #10B981; }
+        .calendar-cell:hover { transform: scale(0.98); }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col relative">
@@ -23,372 +21,223 @@
             </h1>
             <div>
                 <button onclick="showHome()" class="text-gray-600 hover:text-indigo-600 font-bold mr-4 text-sm md:text-base">ホーム</button>
-                <button onclick="startReservationFlow()" class="bg-indigo-600 text-white px-4 py-2 rounded-full font-bold hover:bg-indigo-700 transition shadow-md text-sm md:text-base flex items-center">
-                    <i class="fa-regular fa-calendar-check mr-1"></i> 予約
-                </button>
+                <button onclick="startReservationFlow()" class="bg-indigo-600 text-white px-4 py-2 rounded-full font-bold hover:bg-indigo-700 transition shadow-md text-sm md:text-base">予約する</button>
             </div>
         </div>
     </nav>
 
     <div id="admin-toolbar" class="hidden sticky top-[72px] z-40 bg-slate-800 text-white p-3 shadow-lg animate-fade-in">
-        <div class="max-w-6xl mx-auto flex justify-between items-center flex-wrap gap-2">
-            <div class="flex items-center">
-                <span class="bg-red-500 text-xs font-bold px-2 py-1 rounded mr-2">管理者モード</span>
-                <span class="text-xs">日付クリックで詳細変更</span>
-            </div>
+        <div class="max-w-6xl mx-auto flex justify-between items-center flex-wrap gap-2 text-xs md:text-sm">
+            <div class="flex items-center"><span class="bg-red-500 font-bold px-2 py-1 rounded mr-2">管理者</span>日付クリックで設定変更</div>
             <div class="flex space-x-2">
-                <button onclick="openGlobalSettings()" class="bg-slate-600 hover:bg-slate-500 px-3 py-1.5 rounded text-sm transition"><i class="fa-solid fa-gear mr-1"></i> 一括設定</button>
-                <button onclick="saveChangesToGAS()" class="bg-emerald-600 hover:bg-emerald-500 px-4 py-1.5 rounded text-sm font-bold shadow transition"><i class="fa-solid fa-floppy-disk mr-1"></i> 全て保存</button>
-                <button onclick="logoutAdmin()" class="bg-gray-600 hover:bg-gray-500 px-3 py-1.5 rounded text-sm transition">終了</button>
+                <button onclick="openGlobalSettings()" class="bg-slate-600 px-3 py-1.5 rounded transition">一括設定</button>
+                <button onclick="saveChangesToGAS()" class="bg-emerald-600 px-4 py-1.5 rounded font-bold transition">全て保存</button>
+                <button onclick="logoutAdmin()" class="bg-gray-600 px-3 py-1.5 rounded transition">終了</button>
             </div>
         </div>
     </div>
 
     <div id="home-view" class="block animate-fade-in">
-        <header class="relative bg-gradient-to-r from-indigo-900 to-slate-800 text-white py-20 px-4 text-center overflow-hidden">
-            <div class="relative z-10 max-w-4xl mx-auto">
-                <h2 class="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight">未来を創る、確かな学びを。</h2>
-                <p class="text-lg text-indigo-100 mb-8">24時間いつでも、スマホから次回の授業予約が可能です。</p>
-            </div>
+        <header class="bg-gradient-to-r from-indigo-900 to-slate-800 text-white py-20 px-4 text-center">
+            <h2 class="text-3xl md:text-5xl font-extrabold mb-4">未来を創る、確かな学びを。</h2>
+            <p class="text-lg text-indigo-100">24時間いつでも、スマホから予約が可能です。</p>
         </header>
-        <section class="max-w-4xl mx-auto -mt-10 px-4 relative z-20 pb-20">
-            <div class="bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-slate-100">
-                <div class="grid grid-cols-1 gap-6">
-                    <button id="home-reserve-btn" onclick="startReservationFlow()" class="group flex flex-col items-center justify-center p-8 bg-emerald-50 hover:bg-emerald-100 border-2 border-emerald-100 rounded-xl transition-all cursor-pointer">
-                        <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 group-hover:scale-110 transition-transform">
-                            <i class="fa-solid fa-calendar-plus text-3xl text-emerald-600"></i>
-                        </div>
-                        <span class="text-xl font-bold text-emerald-900">授業を予約する</span>
-                        <span class="text-sm text-emerald-600 mt-2 bg-white px-3 py-1 rounded-full shadow-sm">ここを押してカレンダーを読み込む</span>
-                    </button>
-                </div>
-            </div>
+        <section class="max-w-4xl mx-auto -mt-10 px-4">
+            <button id="home-reserve-btn" onclick="startReservationFlow()" class="w-full bg-white rounded-2xl shadow-xl p-10 border-2 border-emerald-100 hover:bg-emerald-50 transition flex flex-col items-center">
+                <i class="fa-solid fa-calendar-plus text-5xl text-emerald-600 mb-4"></i>
+                <span class="text-2xl font-bold text-emerald-900">授業を予約する</span>
+            </button>
         </section>
     </div>
 
     <div id="calendar-view" class="hidden flex-grow bg-slate-50 pb-20 animate-fade-in">
         <div class="max-w-4xl mx-auto px-4 py-8">
             <div class="flex items-center justify-between mb-6 bg-white p-4 rounded-xl shadow-sm">
-                <button onclick="changeMonth(-1)" class="p-3 hover:bg-slate-100 rounded-full text-slate-500 transition"><i class="fa-solid fa-chevron-left text-xl"></i></button>
+                <button onclick="changeMonth(-1)" class="p-3 text-slate-500"><i class="fa-solid fa-chevron-left"></i></button>
                 <h2 id="current-month-display" class="text-2xl font-bold text-indigo-900"></h2>
-                <button onclick="changeMonth(1)" class="p-3 hover:bg-slate-100 rounded-full text-slate-500 transition"><i class="fa-solid fa-chevron-right text-xl"></i></button>
+                <button onclick="changeMonth(1)" class="p-3 text-slate-500"><i class="fa-solid fa-chevron-right"></i></button>
             </div>
-            <div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden select-none">
-                <div class="grid grid-cols-7 bg-slate-100 border-b border-slate-200 text-sm">
-                    <div class="py-3 text-center font-bold text-red-500">日</div>
-                    <div class="py-3 text-center font-bold text-slate-600">月</div>
-                    <div class="py-3 text-center font-bold text-slate-600">火</div>
-                    <div class="py-3 text-center font-bold text-slate-600">水</div>
-                    <div class="py-3 text-center font-bold text-slate-600">木</div>
-                    <div class="py-3 text-center font-bold text-slate-600">金</div>
-                    <div class="py-3 text-center font-bold text-blue-500">土</div>
-                </div>
-                <div id="calendar-grid" class="grid grid-cols-7 auto-rows-fr"></div>
-            </div>
-            <div class="mt-8 text-center">
-                <button onclick="showHome()" class="text-gray-500 hover:text-gray-800 underline text-sm">トップページに戻る</button>
-            </div>
+            <div id="calendar-grid" class="grid grid-cols-7 bg-white rounded-xl shadow-lg border overflow-hidden"></div>
+            <div class="mt-8 text-center"><button onclick="showHome()" class="text-gray-500 underline text-sm">戻る</button></div>
         </div>
     </div>
 
-    <div id="reservation-modal" class="fixed inset-0 bg-slate-900 bg-opacity-60 z-[60] hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
-            <div class="bg-indigo-600 p-5 text-white flex justify-between items-center">
-                <div>
-                    <h3 class="font-bold text-xl"><i class="fa-solid fa-pen-nib mr-2"></i>授業予約</h3>
-                    <p id="modal-hours-display" class="text-indigo-100 text-sm mt-1 font-bold"></p>
-                </div>
-                <button onclick="closeModal('reservation-modal')" class="text-white hover:bg-indigo-500 p-2 rounded-full"><i class="fa-solid fa-xmark text-2xl"></i></button>
+    <div id="reservation-modal" class="fixed inset-0 bg-slate-900/60 z-[60] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
+            <div class="bg-indigo-600 p-5 text-white flex justify-between">
+                <div><h3 class="font-bold text-xl">授業予約</h3><p id="modal-hours-display" class="text-sm opacity-80"></p></div>
+                <button onclick="closeModal('reservation-modal')"><i class="fa-solid fa-xmark text-2xl"></i></button>
             </div>
-            <div class="p-6 space-y-5">
-                <p id="modal-date-display" class="text-center font-bold text-gray-700 border-b pb-2"></p>
-                <div><label class="block text-sm font-bold text-gray-700 mb-1">お名前</label><input type="text" id="input-name" placeholder="氏名を入力" class="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-indigo-500"></div>
+            <div class="p-6 space-y-4">
+                <input type="text" id="input-name" placeholder="お名前" class="w-full border p-3 rounded-lg outline-indigo-500">
                 <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">開始</label>
-                        <select id="select-start-time" onchange="updateEndTimes()" class="w-full border p-2.5 rounded-lg bg-white"></select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">終了</label>
-                        <select id="select-end-time" class="w-full border p-2.5 rounded-lg bg-white"></select>
-                    </div>
+                    <select id="select-start-time" onchange="updateEndTimes()" class="border p-3 rounded-lg"></select>
+                    <select id="select-end-time" class="border p-3 rounded-lg"></select>
                 </div>
-                <button onclick="submitReservation()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-lg">予約確定</button>
+                <button onclick="submitReservation()" id="submit-btn" class="w-full bg-emerald-600 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-emerald-700 transition">予約を確定する</button>
             </div>
         </div>
     </div>
 
-    <div id="date-setting-modal" class="fixed inset-0 bg-slate-900 bg-opacity-80 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden">
-            <div class="bg-slate-800 p-4 text-white flex justify-between items-center">
-                <h3 class="font-bold text-lg"><i class="fa-solid fa-calendar-day mr-2"></i>個別設定</h3>
-                <button onclick="closeModal('date-setting-modal')" class="text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+    <div id="date-setting-modal" class="fixed inset-0 bg-slate-900/80 z-[70] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden p-6 space-y-4">
+            <h3 id="admin-date-title" class="text-xl font-bold border-b pb-2 text-slate-700"></h3>
+            <div class="space-y-2">
+                <label class="block p-3 border rounded cursor-pointer"><input type="radio" name="day-status" value="default" checked onchange="toggleTimeInputs(false)"> 通常通り</label>
+                <label class="block p-3 border rounded cursor-pointer"><input type="radio" name="day-status" value="closed" onchange="toggleTimeInputs(false)"> 休講</label>
+                <label class="block p-3 border rounded cursor-pointer"><input type="radio" name="day-status" value="open" onchange="toggleTimeInputs(true)"> 開講(時間指定)</label>
             </div>
-            <div class="p-6">
-                <p id="admin-date-title" class="text-xl font-bold text-center mb-6 text-slate-700"></p>
-                <div class="space-y-3 mb-6">
-                    <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50"><input type="radio" name="day-status" value="default" class="mr-3 w-5 h-5 text-indigo-600" checked onchange="toggleTimeInputs(false)"><div><div class="font-bold text-slate-700">通常通り</div><div class="text-xs text-slate-500">一括設定に従う</div></div></label>
-                    <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-red-50"><input type="radio" name="day-status" value="closed" class="mr-3 w-5 h-5 text-red-600" onchange="toggleTimeInputs(false)"><div><div class="font-bold text-red-600">休講にする</div><div class="text-xs text-red-400">一括設定に関わらず休み</div></div></label>
-                    <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-emerald-50"><input type="radio" name="day-status" value="open" class="mr-3 w-5 h-5 text-emerald-600" onchange="toggleTimeInputs(true)"><div><div class="font-bold text-emerald-600">開講する</div><div class="text-xs text-emerald-500">一括設定に関わらず開ける</div></div></label>
-                </div>
-                <div id="admin-time-inputs" class="hidden bg-slate-100 p-4 rounded-lg mb-4">
-                    <p class="text-xs text-slate-500 mb-2 font-bold">営業時間設定</p>
-                    <div class="flex items-center gap-2"><input type="number" id="temp-open" class="w-full p-2 border rounded" placeholder="10"><span>~</span><input type="number" id="temp-close" class="w-full p-2 border rounded" placeholder="22"></div>
-                </div>
-                <button onclick="applyDateSettings()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg shadow">決定（一時保存）</button>
-            </div>
+            <div id="admin-time-inputs" class="hidden flex gap-2"><input type="number" id="temp-open" class="border w-full p-2" placeholder="10"><span>~</span><input type="number" id="temp-close" class="border w-full p-2" placeholder="22"></div>
+            <button onclick="applyDateSettings()" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold">一時保存</button>
         </div>
     </div>
 
-    <div id="global-setting-modal" class="fixed inset-0 bg-slate-900 bg-opacity-80 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden">
-            <div class="bg-slate-800 p-5 text-white flex justify-between items-center"><h3 class="font-bold text-xl">一括設定 (デフォルト)</h3><button onclick="closeModal('global-setting-modal')" class="text-white"><i class="fa-solid fa-xmark text-2xl"></i></button></div>
-            <div class="p-6 space-y-6">
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-sm font-bold text-gray-700 mb-1">基本 開講 (時)</label><input type="number" id="global-open-hour" class="w-full border p-2 rounded"></div>
-                    <div><label class="block text-sm font-bold text-gray-700 mb-1">基本 閉講 (時)</label><input type="number" id="global-close-hour" class="w-full border p-2 rounded"></div>
-                </div>
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">定休日 (毎週)</label>
-                    <div class="flex space-x-2">
-                        <label><input type="checkbox" name="dow" value="1"> 月</label><label><input type="checkbox" name="dow" value="2"> 火</label><label><input type="checkbox" name="dow" value="3"> 水</label><label><input type="checkbox" name="dow" value="4"> 木</label><label><input type="checkbox" name="dow" value="5"> 金</label><label class="text-blue-600"><input type="checkbox" name="dow" value="6"> 土</label><label class="text-red-600"><input type="checkbox" name="dow" value="0"> 日</label>
-                    </div>
-                </div>
-                <button onclick="saveGlobalSettingsAndSend()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-lg">設定を保存して更新</button>
-            </div>
-        </div>
-    </div>
-
-    <footer class="bg-slate-900 text-slate-400 py-8 text-center mt-auto">
-        <p class="text-sm opacity-70 mb-2">&copy; 2026 Sage Academy.</p>
-        <button onclick="adminLogin()" class="text-xs text-white hover:text-gray-300 opacity-50 hover:opacity-100 transition"><i class="fa-solid fa-lock"></i> 管理者ログイン</button>
+    <footer class="bg-slate-900 text-slate-600 py-6 text-center mt-auto">
+        <button onclick="adminLogin()" class="text-xs hover:text-slate-400"><i class="fa-solid fa-lock"></i></button>
     </footer>
 
     <script>
-        // Updated URL
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbxWfaguziYRQX68TVr0vqzGFb2lVmsOyja-0Z-3CfMUfl5KsE1AvUQxVkkiGDztQdX3/exec"; 
+        // 組み込み済み：最新URL
+        const GAS_URL = "https://script.google.com/macros/s/AKfycby74NtaPTr1XfqV3vQ_NhbyrO_uey4yxdOzT4rVoIO7KZdRM1x5Qd_MZxyyRQRNS93m/exec"; 
+        
+        let APP_CONFIG = { openHour: 10, closeHour: 22, closedDaysOfWeek: [0], exceptions: {}, reservations: [] };
+        let currentDate = new Date(), selectedDateStr = "", isAdminMode = false, isConfigLoaded = false;
 
-        // State
-        let APP_CONFIG = { 
-            openHour: 10, closeHour: 22, closedDaysOfWeek: [0], 
-            exceptions: {},
-            reservations: [] // List of booked slots {date, start, end}
-        };
-        let currentDate = new Date();
-        let selectedDateStr = "";
-        let isConfigLoaded = false;
-        let isAdminMode = false;
-
-        // --- LAZY LOAD ---
-        function startReservationFlow() {
-            if (isConfigLoaded) { showCalendarView(); return; }
-            const btns = document.querySelectorAll('#home-reserve-btn, button[onclick="startReservationFlow()"]');
-            btns.forEach(b => { b.dataset.html = b.innerHTML; b.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; b.disabled=true; });
-            
-            fetch(GAS_URL).then(r=>r.json()).then(data => {
-                if(data.error) throw new Error(data.error);
-                // Config Setup
-                const cfg = data.config || {};
-                APP_CONFIG.openHour = parseInt(cfg.openHour) || 10;
-                APP_CONFIG.closeHour = parseInt(cfg.closeHour) || 22;
-                if(cfg.closedDays) APP_CONFIG.closedDaysOfWeek = String(cfg.closedDays).split(',').map(Number);
-                if(cfg.exceptions) APP_CONFIG.exceptions = JSON.parse(cfg.exceptions);
-                // Reservations Setup
-                APP_CONFIG.reservations = data.reservations || [];
-                
-                isConfigLoaded = true;
-                showCalendarView();
-            }).catch(e => { console.error(e); alert("通信エラー: 設定を読み込めませんでした。\n1. GASデプロイを「全員」にしましたか？\n2. URLは最新ですか？"); }).finally(() => {
-                btns.forEach(b => { b.innerHTML = b.dataset.html; b.disabled=false; });
-            });
+        // 通信リトライ機能
+        async function fetchWithRetry(url, retries = 3) {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const res = await fetch(url);
+                    if (!res.ok) throw new Error();
+                    return await res.json();
+                } catch (e) {
+                    if (i === retries - 1) throw e;
+                    console.log(`Retrying... (${i+1})`);
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+            }
         }
 
-        // --- CALENDAR LOGIC ---
-        function renderCalendar() {
-            const year = currentDate.getFullYear();
-            const month = currentDate.getMonth();
-            document.getElementById('current-month-display').innerText = `${year}年 ${month + 1}月`;
-            const grid = document.getElementById('calendar-grid'); grid.innerHTML = "";
-            const firstDay = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-            for(let i=0; i<firstDay; i++) {
-                const c = document.createElement('div'); c.className="min-h-[80px] border-b border-r border-slate-100 bg-slate-50"; grid.appendChild(c);
+        async function startReservationFlow() {
+            const btn = document.getElementById('home-reserve-btn');
+            const originalContent = btn.innerHTML;
+            
+            if (!isConfigLoaded) {
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-3xl mb-4"></i><span class="text-xl font-bold">データを読み込み中...</span>';
+                try {
+                    const data = await fetchWithRetry(GAS_URL);
+                    const cfg = data.config || {};
+                    APP_CONFIG.openHour = Number(cfg.openHour) || 10;
+                    APP_CONFIG.closeHour = Number(cfg.closeHour) || 22;
+                    if(cfg.closedDays) APP_CONFIG.closedDaysOfWeek = String(cfg.closedDays).split(',').map(Number);
+                    if(cfg.exceptions) APP_CONFIG.exceptions = JSON.parse(cfg.exceptions);
+                    APP_CONFIG.reservations = data.reservations || [];
+                    isConfigLoaded = true;
+                } catch (e) {
+                    alert("サーバーとの通信に失敗しました。時間をおいて再度お試しください。");
+                    btn.innerHTML = originalContent;
+                    return;
+                }
             }
+            showCalendarView();
+        }
 
-            for(let day=1; day<=daysInMonth; day++) {
-                const dStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-                const dateObj = new Date(year, month, day);
-                const dayOfWeek = dateObj.getDay();
+        function renderCalendar() {
+            const y = currentDate.getFullYear(), m = currentDate.getMonth();
+            document.getElementById('current-month-display').innerText = `${y}年 ${m + 1}月`;
+            const grid = document.getElementById('calendar-grid'); grid.innerHTML = "";
+            const first = new Date(y, m, 1).getDay(), days = new Date(y, m + 1, 0).getDate();
+            
+            ['日','月','火','水','木','金','土'].forEach(d => {
+                grid.innerHTML += `<div class="bg-slate-50 py-2 text-center text-xs font-bold text-slate-400 border-b">${d}</div>`;
+            });
+            
+            for(let i=0; i<first; i++) grid.innerHTML += `<div class="min-h-[80px] border-b border-r bg-slate-50"></div>`;
+            
+            for(let d=1; d<=days; d++) {
+                const dStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                const dow = new Date(y, m, d).getDay();
+                let status = "default", oh = APP_CONFIG.openHour, ch = APP_CONFIG.closeHour;
                 
-                // Status Determination
-                let status = "default", startH = APP_CONFIG.openHour, endH = APP_CONFIG.closeHour;
-                if (APP_CONFIG.exceptions[dStr]) {
-                    const ex = APP_CONFIG.exceptions[dStr]; status = ex.status;
-                    if(status === 'open') { startH = ex.open; endH = ex.close; }
-                } else {
-                    status = APP_CONFIG.closedDaysOfWeek.includes(dayOfWeek) ? "closed" : "open";
+                if(APP_CONFIG.exceptions[dStr]) {
+                    status = APP_CONFIG.exceptions[dStr].status;
+                    if(status === 'open') { oh = APP_CONFIG.exceptions[dStr].open; ch = APP_CONFIG.exceptions[dStr].close; }
+                } else { 
+                    status = APP_CONFIG.closedDaysOfWeek.includes(dow) ? "closed" : "open"; 
                 }
-
-                const isClosed = (status === "closed");
-                const isToday = new Date().toDateString() === dateObj.toDateString();
-
+                
+                const closed = (status === "closed"), today = new Date().toDateString() === new Date(y, m, d).toDateString();
                 const cell = document.createElement('div');
-                cell.className = "calendar-cell min-h-[80px] border-b border-r border-slate-100 p-2 relative transition cursor-pointer " + 
-                                (isClosed ? "bg-red-50" : "hover:bg-indigo-50 bg-white");
-                
-                let textColor = "text-slate-700";
-                if(dayOfWeek===0) textColor="text-red-500"; else if(dayOfWeek===6) textColor="text-blue-500";
-                if(isClosed) textColor="text-red-400 opacity-60";
-
-                let badge = "";
-                if (isAdminMode) {
-                    if (APP_CONFIG.exceptions[dStr]) badge = `<span class="text-xs px-1 rounded ${isClosed?'bg-red-200 text-red-800':'bg-blue-200 text-blue-800'}">例外設定</span>`;
-                    else if (isClosed) badge = '<span class="text-xs text-gray-400">定休</span>';
-                    if(!isClosed) badge += `<div class="text-[10px] text-gray-500 mt-1">${startH}:00-${endH}:00</div>`;
-                } else {
-                    badge = isClosed 
-                        ? '<span class="text-xs text-red-400 font-bold border border-red-200 px-1 rounded">休</span>' 
-                        : '<span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold">空き</span>';
-                }
-
-                cell.innerHTML = `<span class="text-sm md:text-lg font-bold ${textColor} ${isToday?'bg-indigo-600 text-white rounded-full w-7 h-7 flex items-center justify-center':''}">${day}</span><div class="mt-1 flex flex-col items-center">${badge}</div>`;
-                
-                cell.onclick = () => {
-                    if (isAdminMode) openDateSettingModal(dStr, status, startH, endH);
-                    else if (!isClosed) openReservationModal(dStr, startH, endH);
-                };
+                cell.className = `min-h-[80px] border-b border-r p-2 cursor-pointer transition ${closed ? 'bg-red-50' : 'bg-white hover:bg-indigo-50'}`;
+                cell.innerHTML = `
+                    <span class="text-sm font-bold ${dow===0?'text-red-500':dow===6?'text-blue-500':'text-slate-600'} ${today?'bg-indigo-600 text-white rounded-full px-2 py-0.5':''}">${d}</span>
+                    <div class="text-center mt-2">${closed ? '<span class="text-[10px] text-red-400 border border-red-200 px-1 rounded">休</span>' : '<span class="text-[10px] bg-emerald-100 text-emerald-700 px-2 rounded-full">空</span>'}</div>`;
+                cell.onclick = () => isAdminMode ? openDateSettingModal(dStr, oh, ch) : (!closed && openReservationModal(dStr, oh, ch));
                 grid.appendChild(cell);
             }
         }
 
-        // --- RESERVATION MODAL (USER) ---
-        function openReservationModal(dStr, startH, endH) {
+        function openReservationModal(dStr, oh, ch) {
             selectedDateStr = dStr;
-            const [y,m,d] = dStr.split('-');
+            document.getElementById('modal-hours-display').innerText = `${dStr} (${oh}:00 - ${ch}:00)`;
+            const s = document.getElementById('select-start-time'); s.innerHTML = "";
+            const booked = APP_CONFIG.reservations.filter(r => r.date === dStr).map(r => ({sm: timeToM(r.start), em: timeToM(r.end)}));
             
-            // Header Display (Date & Open Hours)
-            document.getElementById('modal-date-display').innerText = `${y}年 ${m}月${d}日`;
-            document.getElementById('modal-hours-display').innerText = `開講時間: ${startH}:00 - ${endH}:00`;
-            document.getElementById('reservation-modal').classList.remove('hidden');
-            
-            // Get booked slots for this day
-            const dayReservations = APP_CONFIG.reservations.filter(r => r.date === dStr).map(r => ({
-                startMin: timeToMin(r.start),
-                endMin: timeToMin(r.end)
-            }));
-
-            // Populate Start Time Select
-            const s = document.getElementById('select-start-time'); s.innerHTML="";
-            
-            // Generate all possible slots (30min increments)
-            for(let h=startH; h<endH; h++) {
-                [0, 30].forEach(min => {
-                    const currentMin = h*60 + min;
-                    const timeStr = `${h}:${min===0?'00':'30'}`;
-                    
-                    // CHECK 1: Is this start time INSIDE an existing booking?
-                    const isInsideBooking = dayReservations.some(r => currentMin >= r.startMin && currentMin < r.endMin);
-                    
-                    if (!isInsideBooking) {
-                        addOption(s, timeStr);
-                    }
+            for(let h=oh; h<ch; h++) {
+                [0,30].forEach(m => {
+                    const min = h*60+m;
+                    if(!booked.some(b => min >= b.sm && min < b.em)) addOpt(s, `${h}:${m===0?'00':'30'}`);
                 });
             }
-            
-            // Save info for EndTime calculation
-            s.dataset.endH = endH; 
-            s.dataset.booked = JSON.stringify(dayReservations);
-            updateEndTimes();
+            s.dataset.ch = ch; s.dataset.booked = JSON.stringify(booked);
+            updateEndTimes(); 
+            document.getElementById('reservation-modal').classList.remove('hidden');
         }
 
         function updateEndTimes() {
-            const s = document.getElementById('select-start-time');
-            const e = document.getElementById('select-end-time'); e.innerHTML="";
+            const s = document.getElementById('select-start-time'), e = document.getElementById('select-end-time'); 
+            e.innerHTML = "";
             if(!s.value) return;
-            
             const [sh, sm] = s.value.split(':').map(Number);
-            const startMin = sh*60 + sm;
-            const limitMin = parseInt(s.dataset.endH) * 60;
-            const booked = JSON.parse(s.dataset.booked);
-
-            // Find the NEAREST future booking to cap the end time
-            let nextBookingStart = limitMin;
-            booked.forEach(r => {
-                if (r.startMin > startMin && r.startMin < nextBookingStart) {
-                    nextBookingStart = r.startMin;
-                }
-            });
-
-            // Generate End Times
-            let cm = startMin + 30; 
-            while(cm <= nextBookingStart) {
-                const h=Math.floor(cm/60); const m=cm%60; 
-                addOption(e, `${h}:${m===0?'00':'30'}`); 
-                if(cm === startMin + 60) e.lastChild.selected=true; // Select 1h by default if possible
-                cm+=30;
-            }
+            const smm = sh*60+sm, chm = parseInt(s.dataset.ch)*60, booked = JSON.parse(s.dataset.booked);
+            let nextB = chm;
+            booked.forEach(b => { if(b.sm > smm && b.sm < nextB) nextB = b.sm; });
+            for(let m=smm+30; m<=nextB; m+=30) addOpt(e, `${Math.floor(m/60)}:${m%60===0?'00':'30'}`);
         }
 
-        // --- ADMIN SETTINGS ---
-        function openDateSettingModal(dStr, status, o, c) {
-            editingDate = dStr;
-            const [y,m,d] = dStr.split('-');
-            document.getElementById('admin-date-title').innerText = `${m}月${d}日 の設定`;
-            let val = "default";
-            if (APP_CONFIG.exceptions[dStr]) val = APP_CONFIG.exceptions[dStr].status;
-            document.querySelector(`input[name="day-status"][value="${val}"]`).checked = true;
-            toggleTimeInputs(val === "open");
-            document.getElementById('temp-open').value = o; document.getElementById('temp-close').value = c;
-            document.getElementById('date-setting-modal').classList.remove('hidden');
-        }
-        function toggleTimeInputs(show) { document.getElementById('admin-time-inputs').classList.toggle('hidden', !show); }
-        function applyDateSettings() {
-            const status = document.querySelector('input[name="day-status"]:checked').value;
-            if (status === "default") delete APP_CONFIG.exceptions[editingDate];
-            else APP_CONFIG.exceptions[editingDate] = { status: status, open: parseInt(document.getElementById('temp-open').value), close: parseInt(document.getElementById('temp-close').value) };
-            closeModal('date-setting-modal'); renderCalendar();
-        }
-        function openGlobalSettings() {
-            document.getElementById('global-open-hour').value = APP_CONFIG.openHour;
-            document.getElementById('global-close-hour').value = APP_CONFIG.closeHour;
-            document.querySelectorAll('input[name="dow"]').forEach(cb => cb.checked = APP_CONFIG.closedDaysOfWeek.includes(parseInt(cb.value)));
-            document.getElementById('global-setting-modal').classList.remove('hidden');
-        }
-        function saveGlobalSettingsAndSend() {
-            APP_CONFIG.openHour = parseInt(document.getElementById('global-open-hour').value);
-            APP_CONFIG.closeHour = parseInt(document.getElementById('global-close-hour').value);
-            const newDays = []; document.querySelectorAll('input[name="dow"]:checked').forEach(cb => newDays.push(parseInt(cb.value)));
-            APP_CONFIG.closedDaysOfWeek = newDays;
-            saveChangesToGAS(); closeModal('global-setting-modal');
-        }
-        function saveChangesToGAS() {
-            const payload = { action: "update_config", openHour: APP_CONFIG.openHour, closeHour: APP_CONFIG.closeHour, closedDays: APP_CONFIG.closedDaysOfWeek.join(','), exceptions: JSON.stringify(APP_CONFIG.exceptions) };
-            fetch(GAS_URL, { method: "POST", mode: "no-cors", headers: {"Content-Type":"text/plain"}, body: JSON.stringify(payload)})
-            .then(() => { alert("保存しました！"); location.reload(); }).catch(() => alert("保存エラー"));
-        }
-
-        // --- HELPERS ---
-        function timeToMin(timeStr) { const [h,m] = timeStr.split(':').map(Number); return h*60+m; }
-        function addOption(p,v){const o=document.createElement('option');o.value=v;o.innerText=v;p.appendChild(o);}
-        function adminLogin(){ if(prompt("Pass")==="1234"){ isAdminMode=true; if(!isConfigLoaded)startReservationFlow(); else renderCalendar(); document.getElementById('admin-toolbar').classList.remove('hidden'); document.body.classList.add('admin-mode-active'); } }
-        function logoutAdmin(){ isAdminMode=false; document.getElementById('admin-toolbar').classList.add('hidden'); document.body.classList.remove('admin-mode-active'); renderCalendar(); }
-        function showHome(){ document.getElementById('home-view').classList.remove('hidden'); document.getElementById('calendar-view').classList.add('hidden'); window.scrollTo(0,0); }
-        function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
-        function changeMonth(s){ currentDate.setMonth(currentDate.getMonth()+s); renderCalendar(); }
         function submitReservation() {
             const name = document.getElementById('input-name').value;
             if(!name) return alert("名前を入力してください");
-            if(!confirm("予約しますか？")) return;
-            const btn=document.querySelector('#reservation-modal button');
-            const txt=btn.innerText; btn.innerText="送信中..."; btn.disabled=true;
-            fetch(GAS_URL, { method: "POST", mode: "no-cors", headers: {"Content-Type":"text/plain"}, body: JSON.stringify({
-                action: "reserve_class", name: name, date: selectedDateStr, 
-                startTime: document.getElementById('select-start-time').value, 
-                endTime: document.getElementById('select-end-time').value
-            })}).then(()=>{ alert("完了"); closeModal('reservation-modal'); })
-            .finally(()=>{ btn.innerText=txt; btn.disabled=false; });
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true; btn.innerText = "送信中...";
+            
+            const payload = { action: "reserve_class", name, date: selectedDateStr, startTime: document.getElementById('select-start-time').value, endTime: document.getElementById('select-end-time').value };
+            
+            fetch(GAS_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) })
+            .then(() => { alert("予約が完了しました！"); location.reload(); })
+            .catch(() => { alert("送信に失敗しました。"); btn.disabled = false; btn.innerText = "予約を確定する"; });
         }
+
+        function adminLogin(){ if(prompt("パスワードを入力")==="1234"){ isAdminMode=true; startReservationFlow(); document.getElementById('admin-toolbar').classList.remove('hidden'); } }
+        function saveChangesToGAS(){
+            const payload = { action: "update_config", openHour: APP_CONFIG.openHour, closeHour: APP_CONFIG.closeHour, closedDays: APP_CONFIG.closedDaysOfWeek.join(','), exceptions: JSON.stringify(APP_CONFIG.exceptions) };
+            fetch(GAS_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) }).then(() => { alert("設定を保存しました。"); location.reload(); });
+        }
+        function openDateSettingModal(d, o, c){ selectedDateStr = d; document.getElementById('admin-date-title').innerText = d; document.getElementById('temp-open').value = o; document.getElementById('temp-close').value = c; document.getElementById('date-setting-modal').classList.remove('hidden'); }
+        function applyDateSettings(){
+            const s = document.querySelector('input[name="day-status"]:checked').value;
+            if(s === 'default') delete APP_CONFIG.exceptions[selectedDateStr];
+            else APP_CONFIG.exceptions[selectedDateStr] = { status: s, open: parseInt(document.getElementById('temp-open').value), close: parseInt(document.getElementById('temp-close').value) };
+            closeModal('date-setting-modal'); renderCalendar();
+        }
+        function timeToM(t){ if(!t)return 0; const [h,m]=t.split(':').map(Number); return h*60+m; }
+        function addOpt(p,v){ const o=document.createElement('option'); o.value=v; o.innerText=v; p.appendChild(o); }
+        function showHome(){ document.getElementById('home-view').classList.remove('hidden'); document.getElementById('calendar-view').classList.add('hidden'); }
+        function showCalendarView(){ document.getElementById('home-view').classList.add('hidden'); document.getElementById('calendar-view').classList.remove('hidden'); renderCalendar(); }
+        function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
+        function changeMonth(s){ currentDate.setMonth(currentDate.getMonth()+s); renderCalendar(); }
+        function toggleTimeInputs(s){ document.getElementById('admin-time-inputs').classList.toggle('hidden', !s); }
+        function logoutAdmin(){ location.reload(); }
     </script>
 </body>
 </html>
